@@ -26,7 +26,7 @@ const router = useRouter();
 
 
   useEffect(() => {
-    setToken(getAccessToken());
+  setToken(getAccessToken() ?? null);
 
     if (!token) {
       router.push("/login");
