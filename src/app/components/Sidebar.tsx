@@ -91,8 +91,10 @@ export default function Sidebar({
   const dispatch = useAppDispatch();
 
   const params = useParams();
-  const projectId = params?.projectId as string | undefined;
-
+const projectId = Array.isArray(params?.projectId)
+  ? params.projectId[0]
+  : params?.projectId ?? "";
+if (!projectId) return null;
   const items = menuItems(projectId);
 
   async function signOut() {
