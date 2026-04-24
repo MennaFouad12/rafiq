@@ -71,7 +71,7 @@
 import ReduxProvider from "@/redux/provider";
 import "./globals.css";
 import ClientLayout from "./ClientLayout";
-import AuthInitializer from "./components/AuthInitializer";
+// import AuthInitializer from "./components/AuthInitializer";
 // import ClientLayout from "./ClientLayout";
 
 export default function RootLayout({
@@ -83,9 +83,9 @@ export default function RootLayout({
     <html lang="en">
       <body  className="h-full ">
         <ReduxProvider>
-          <AuthInitializer>
+        
           <ClientLayout>{children}</ClientLayout>
-          </AuthInitializer>
+      
         </ReduxProvider>
       </body>
     </html>

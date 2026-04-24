@@ -69,13 +69,13 @@ export async function Login(email: string, password: string) {
     Cookies.set("access_token", access_token, {
       expires: 1, // يوم
       secure: true,
-      sameSite: "Strict",
+      sameSite: "Lax",
     });
 
     Cookies.set("refresh_token", refresh_token, {
       expires: 7,
       secure: true,
-      sameSite: "Strict",
+      sameSite: "Lax",
     });
 
     return user;
@@ -119,8 +119,8 @@ async function refreshToken() {
   // ✅ تحديث التوكن
   Cookies.set("access_token", res.access_token, {
     expires: 1,
-    secure: true,
-    sameSite: "Strict",
+   secure: true,
+  sameSite: "Lax", // ✅ بدل Strict
   });
 
   return res.access_token;
@@ -128,12 +128,15 @@ async function refreshToken() {
 
 export async function fetchWithAuth(url: string, options: any = {}) {
   let token = Cookies.get("access_token");
+  console.log("🔐 BEFORE REQUEST ACCESS TOKEN:", token);
+  console.log("🔐 REFRESH TOKEN:", Cookies.get("refresh_token"));
 
   let response = await fetch(url, {
     ...options,
     headers: {
       ...options.headers,
       Authorization: `Bearer ${token}`,
+      apikey:apiKey
     },
   });
 
