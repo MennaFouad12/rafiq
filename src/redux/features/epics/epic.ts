@@ -5,11 +5,18 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 export const fetchepics = createAsyncThunk(
   "epics/fetchepics",
   async (
-    { page, limit, projectId }: { page: number; limit: number, projectId: string },
+    {
+      page,
+      limit,
+      projectId,
+    }: { page?: number; limit?: number; projectId: string },
     { rejectWithValue }
   ) => {
     try {
-      const data = await getProjectEpics(page, limit, projectId);
+      
+      const finalLimit = limit ?? 1000;
+      const finalPage = page ?? 1;
+      const data = await getProjectEpics(finalPage, finalLimit, projectId);
       return data;
     } catch (error: any) {
       return rejectWithValue(error.message);

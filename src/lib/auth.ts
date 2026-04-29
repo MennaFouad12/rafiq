@@ -42,7 +42,7 @@ catch (error) {
 
 
 
-export async function Login(email: string, password: string) {
+export async function Signin(email: string, password: string) {
   try {
     const response = await fetch(
       `${baseUrl}/auth/v1/token?grant_type=password`,
@@ -168,6 +168,9 @@ export async function fetchWithAuth(url: string, options: any = {}) {
 export function getAccessToken() {
   return Cookies.get("access_token");
 }
+
+
+
 export async function logout() {
   const token = Cookies.get("access_token");
 

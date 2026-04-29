@@ -1,0 +1,28 @@
+"use client";
+
+
+import { getInitials } from "@/lib/utils/get-name-initials";
+// import { getInitials } from "@/lib/utils/get-name-initials";
+import { useAppSelector } from "@/redux/hooks";
+
+export default function UserInfo() {
+  const user = useAppSelector((store) => store.user.data);
+
+  return (
+    <div className="flex items-center gap-4 md:me-6">
+      <div className="my-3 hidden md:block">
+        <p className="text-slate-dark font-semibold text-sm capitalize">
+          {user?.name}
+        </p>
+        <span className="uppercase text-primary text-[10px] font-bold tracking-[1px]">
+          {user?.department}
+        </span>
+      </div>
+      {user?.name && (
+        <span className="bg-primary-container text-white p-2 rounded-lg">
+          {getInitials(user.name)}
+        </span>
+      )}
+    </div>
+  );
+}
