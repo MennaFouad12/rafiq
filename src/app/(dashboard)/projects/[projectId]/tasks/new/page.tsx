@@ -96,6 +96,7 @@ export default function AddTaskPage() {
   console.log("epics", epics);
   const router = useRouter();
   const onSubmit = async (data: TaskFormData) => {
+     if (!projectId) return; 
     try {
       await createProjectTask(
         data.title,
