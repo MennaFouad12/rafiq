@@ -2,12 +2,18 @@ import { fetchWithAuth } from "./auth";
 
 const baseUrl="https://lwsctewpcxlvwjixzdky.supabase.co"
 const apiKey="sb_publishable_WueluaPFskLbogGJGAe6-Q_U_Jvc2Qj"
-export async function getProjectEpics(page: number, limit: number,project_id:string) {
+export async function getProjectEpics(page: number, limit: number,project_id:string,  search?: string) {
   try {
-    const offset = (page - 1) * limit;
+  const offset = (page - 1) * limit;
+
+let url = `${baseUrl}/rest/v1/project_epics?project_id=eq.${project_id}&limit=${limit}&offset=${offset}`;
+
+if (search) {
+  url += `&title=ilike.%25${search}%25`;
+}
 
     const response = await fetchWithAuth(
-      `${baseUrl}/rest/v1/project_epics?project_id=eq.${project_id}&limit=${limit}&offset=${offset}`,
+      url,
       {
         method: "GET",
         headers: {
@@ -109,6 +115,51 @@ export async function getSingleEpic(project_id: string,id:string) {
     return data[0]||null;
   } catch (error) {
     console.log("get single epic failed", error);
+    throw error;
+  }
+}
+
+
+
+
+
+
+export async function updateProjectEpic(
+  epic_id: string,
+  data: {
+    title?: string;
+    description?: string;
+    assignee_id?: string | null;
+    deadline?: string | null;
+  }
+) {
+  try {
+    const filteredData = Object.fromEntries(
+      Object.entries(data).filter(([_, v]) => v !== undefined)
+    );
+
+    let response = await fetchWithAuth(
+      `${baseUrl}/rest/v1/epics?id=eq.${epic_id}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          apikey: apiKey,
+          Prefer: "return=representation",
+        },
+        body: JSON.stringify(filteredData),
+      }
+    );
+
+    const res = await response.json();
+
+    if (!response.ok) {
+      throw new Error(res.error || "update epic failed");
+    }
+
+    return res;
+  } catch (error) {
+    console.log("update epic failed", error);
     throw error;
   }
 }

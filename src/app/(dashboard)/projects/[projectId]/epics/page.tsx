@@ -14,6 +14,8 @@ import EpicCardSkeleton from "@/components/EpicCardSkeleton";
 import EpicsCard from "@/components/EpicsCard";
 import Pagination from "@/components/Pagination";
 import EpicDetailsModal from "@/components/EpicDetailModal";
+import SearchIcon from "@/components/icons/search-icon";
+import SearchInput from "@/components/SearchInput";
 
 
 type epics = {
@@ -40,6 +42,9 @@ export default function page() {
   const dispatch = useAppDispatch();
 
   const [currentPage, setCurrentPage] = React.useState(1);
+  const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+
   const params = useParams();
   const [selectedEpicId, setSelectedEpicId] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -50,9 +55,31 @@ export default function page() {
   const limit = 6;
   const totalPages = Math.ceil(totalCount / limit);
   useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(search);
+    }, 300);
+
+    return () => clearTimeout(handler);
+  }, [search]);
+
+  //  reset page on search
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [debouncedSearch]);
+
+  //  fetch data
+  useEffect(() => {
     if (!projectId) return;
-    dispatch(fetchepics({ page: currentPage, limit, projectId }));
-  }, [dispatch, currentPage, projectId]);
+
+    dispatch(
+      fetchepics({
+        page: currentPage,
+        limit,
+        projectId,
+        search: debouncedSearch,
+      })
+    );
+  }, [dispatch, currentPage, projectId, debouncedSearch]);
 
   return (
     <div className="min-h-screen bg-gray-50 p-8">
@@ -65,13 +92,22 @@ export default function page() {
             Manage and curate your epics
           </p>
         </div>
+        <div className="flex items-center">
 
-        <button
-          onClick={() => router.push(`/projects/${projectId}/epics/new`)}
-          className="hidden md:block bg-[linear-gradient(95.71deg,var(--color-primary)_0%,var(--color-primary-container)_100%)] text-white py-2 px-6 rounded-md"
-        >
-          + Create New Epic
-        </button>
+          <SearchInput
+            placeholder="Search epics..."
+            onSearch={(value) => {
+              setSearch(value);
+              setCurrentPage(1);
+            }}
+          />
+          <button
+            onClick={() => router.push(`/projects/${projectId}/epics/new`)}
+            className="hidden md:block ms-3  bg-[linear-gradient(95.71deg,var(--color-primary)_0%,var(--color-primary-container)_100%)] text-white py-2 px-6 rounded-md"
+          >
+            + Create New Epic
+          </button>
+        </div>
       </div>
 
       {/*  ERROR STATE */}
@@ -166,6 +202,13 @@ export default function page() {
             />
           ))}
         </div>
+      )}
+      {debouncedSearch && epics.length === 0 && (
+        <p>No epics found matching your search</p>
+      )}
+
+      {!debouncedSearch && epics.length === 0 && (
+        <p>No epics found for this project</p>
       )}
 
       {/* MOBILE BUTTON */}

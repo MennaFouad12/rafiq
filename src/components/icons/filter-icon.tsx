@@ -1,0 +1,14 @@
+export default function FilterIcon({
+  width = "18",
+  height = "12",
+}: {
+  width?: string;
+  height?: string;
+}) {
+  return (
+  <svg width={width} height={height} viewBox="0 0 18 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M7 12V10H11V12H7ZM3 7V5H15V7H3ZM0 2V0H18V2H0Z" fill="#041B3C"/>
+</svg>
+
+  );
+}

@@ -9,14 +9,21 @@ export const fetchepics = createAsyncThunk(
       page,
       limit,
       projectId,
-    }: { page?: number; limit?: number; projectId: string },
+      search,
+    }: { page?: number; limit?: number; projectId: string; search?: string },
     { rejectWithValue }
   ) => {
     try {
-      
-      const finalLimit = limit ?? 1000;
+      const finalLimit = limit ?? 10;
       const finalPage = page ?? 1;
-      const data = await getProjectEpics(finalPage, finalLimit, projectId);
+
+      const data = await getProjectEpics(
+        finalPage,
+        finalLimit,
+        projectId,
+        search
+      );
+
       return data;
     } catch (error: any) {
       return rejectWithValue(error.message);
@@ -46,6 +53,7 @@ export const fetchSingleEpic = createAsyncThunk(
   async ({projectId,id}: {projectId: string, id: string}, { rejectWithValue }) => {
     try {
       const data = await getSingleEpic(projectId,id);
+      console.log("API RESPONSE:from edit", data);
       return data;
     } catch (error: any) {
       return rejectWithValue(error.message);
@@ -104,7 +112,11 @@ const epicsSlice = createSlice({
       })
       .addCase(fetchepics.fulfilled, (state, action) => {
         state.loadingEpic = false;
-        state.epics = action.payload.data;
+      if (state.currentPage === 1) {
+  state.epics = action.payload.data;
+} else {
+  state.epics = [...state.epics, ...action.payload.data];
+}
         state.totalCount = action.payload.totalCount;
       })
       .addCase(fetchepics.rejected, (state, action) => {
@@ -116,10 +128,11 @@ const epicsSlice = createSlice({
               state.error = null;
             })
             .addCase(fetchSingleEpic.fulfilled, (state, action) => {
+              console.log("PAYLOAD:", action.payload);
               state.loadingSingleEpic = false;
       
               
-              state.singleEpic = action.payload[0];
+              state.singleEpic = action.payload;
             })
             .addCase(fetchSingleEpic.rejected, (state, action) => {
               state.loadingSingleEpic = false;

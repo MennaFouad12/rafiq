@@ -175,7 +175,7 @@ export default function MembersPage() {
         )}
       </div>
 
-      {/* FAB - زر الإضافة على الموبايل */}
+    
       <button className="lg:hidden fixed bottom-6 right-6 w-14 h-14 bg-primary text-white rounded-2xl shadow-lg flex items-center justify-center text-2xl hover:bg-blue-700 active:scale-95 transition-all">
         +
       </button>

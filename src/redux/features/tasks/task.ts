@@ -1,22 +1,40 @@
 
+
+
+
+
+
+
+
 import { getEpicTasks, getProjectTasks } from "@/lib/tasks";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+
+/* ───── Thunks ───── */
 
 export const fetchtasks = createAsyncThunk(
   "tasks/fetchtasks",
   async (
     {
+      projectId,
       page,
       limit,
-      projectId,
-    }: { page?: number; limit?: number; projectId: string },
+      status,
+    }: {
+      projectId: string;
+      page?: number;
+      limit?: number;
+      status?: string;
+    },
     { rejectWithValue }
   ) => {
     try {
-      
-      const finalLimit = limit ?? 1000;
-      const finalPage = page ?? 1;
-      const data = await getProjectTasks(finalPage, finalLimit, projectId);
+      const data = await getProjectTasks({
+        project_id: projectId,
+        page,
+        limit,
+        status,
+      });
+
       return data;
     } catch (error: any) {
       return rejectWithValue(error.message);
@@ -26,18 +44,9 @@ export const fetchtasks = createAsyncThunk(
 
 export const fetchEpicTasks = createAsyncThunk(
   "tasks/fetchEpicTasks",
-  async (
-    {
-    
-      epicId,
-    }: {  epicId: string },
-    { rejectWithValue }
-  ) => {
+  async ({ epicId }: { epicId: string }, { rejectWithValue }) => {
     try {
-      
-    
       const data = await getEpicTasks(epicId);
-      console.log("API RESPONSE:", data);
       return data;
     } catch (error: any) {
       return rejectWithValue(error.message);
@@ -45,16 +54,15 @@ export const fetchEpicTasks = createAsyncThunk(
   }
 );
 
-
-
+/* ───── State ───── */
 
 interface taskState {
   tasks: any[];
+  tasksByStatus: Record<string, any[]>;
   epicTasks: any[];
-loadingTasks: boolean;
-loadingEpicTasks: boolean;
 
-
+  loadingTasks: boolean;
+  loadingEpicTasks: boolean;
 
   error: string | null;
 
@@ -65,10 +73,12 @@ loadingEpicTasks: boolean;
 
 const initialState: taskState = {
   tasks: [],
-  
+  tasksByStatus: {},
   epicTasks: [],
-loadingTasks: false,
-loadingEpicTasks: false,
+
+  loadingTasks: false,
+  loadingEpicTasks: false,
+
   error: null,
 
   currentPage: 1,
@@ -76,50 +86,86 @@ loadingEpicTasks: false,
   totalCount: 0,
 };
 
+/* ───── Helper (dedupe) ───── */
 
+const uniqueById = (arr: any[]) => {
+  return Array.from(
+    new Map(arr.map((item) => [item.id, item])).values()
+  );
+};
+
+/* ───── Slice ───── */
 
 const tasksSlice = createSlice({
   name: "tasks",
   initialState,
-  reducers: {
-  
-  },
+  reducers: {},
+
   extraReducers: (builder) => {
     builder
 
-      // ===== FETCH tasks =====
-      .addCase( fetchtasks.pending, (state) => {
+      /* ───── FETCH TASKS ───── */
+      .addCase(fetchtasks.pending, (state) => {
         state.loadingTasks = true;
         state.error = null;
       })
+
       .addCase(fetchtasks.fulfilled, (state, action) => {
         state.loadingTasks = false;
-        state.tasks = action.payload.data;
+
+        const newTasks = action.payload.data;
+
+        // merge + remove duplicates
+        const merged =
+          state.currentPage === 1
+            ? newTasks
+            : [...state.tasks, ...newTasks];
+
+        state.tasks = uniqueById(merged);
+
+        // grouping by status (based on clean data)
+        const grouped: Record<string, any[]> = {};
+
+        state.tasks.forEach((task) => {
+          const status = task.status;
+
+          if (!grouped[status]) {
+            grouped[status] = [];
+          }
+
+          grouped[status].push(task);
+        });
+
+        state.tasksByStatus = grouped;
+
         state.totalCount = action.payload.totalCount;
       })
+
       .addCase(fetchtasks.rejected, (state, action) => {
         state.loadingTasks = false;
         state.error = action.payload as string;
       })
 
-      .addCase( fetchEpicTasks.pending, (state) => {
+      /* ───── EPIC TASKS ───── */
+      .addCase(fetchEpicTasks.pending, (state) => {
         state.loadingEpicTasks = true;
         state.error = null;
       })
+
       .addCase(fetchEpicTasks.fulfilled, (state, action) => {
         state.loadingEpicTasks = false;
-        state.epicTasks = action.payload;
-      
+
+        // safety: ensure array
+        state.epicTasks = Array.isArray(action.payload)
+          ? action.payload
+          : action.payload?.data || [];
       })
+
       .addCase(fetchEpicTasks.rejected, (state, action) => {
         state.loadingEpicTasks = false;
         state.error = action.payload as string;
-      })
-
-
+      });
   },
-
-    })
-
+});
 
 export default tasksSlice.reducer;

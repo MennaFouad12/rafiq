@@ -48,21 +48,35 @@ catch (error) {
 
 
 
-export async function getProjectTasks(page: number, limit: number,project_id:string) {
+export async function getProjectTasks({
+  project_id,
+  page = 1,
+  limit = 1000,
+  status,
+}: {
+  project_id: string;      // ✅ الوحيد required
+  page?: number;
+  limit?: number;
+  status?: string;
+}) {
   try {
     const offset = (page - 1) * limit;
 
-    const response = await fetchWithAuth(
-      `${baseUrl}/rest/v1/project_tasks?project_id=eq.${project_id}&limit=${limit}&offset=${offset}`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          apikey: apiKey,
-          Prefer: "count=exact",
-        },
-      }
-    );
+    let url = `${baseUrl}/rest/v1/project_tasks?project_id=eq.${project_id}&limit=${limit}&offset=${offset}`;
+
+    
+    if (status) {
+      url += `&status=eq.${status}`;
+    }
+
+    const response = await fetchWithAuth(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        apikey: apiKey,
+        Prefer: "count=exact",
+      },
+    });
 
     const data = await response.json();
 
@@ -70,7 +84,6 @@ export async function getProjectTasks(page: number, limit: number,project_id:str
       throw new Error(data.error || "get tasks failed");
     }
 
-    
     const contentRange = response.headers.get("content-range");
 
     let totalCount = 0;
@@ -83,11 +96,10 @@ export async function getProjectTasks(page: number, limit: number,project_id:str
       totalCount,
     };
   } catch (error) {
-    console.log("get epics failed", error);
+    console.log("get tasks failed", error);
     throw error;
   }
 }
-
 
 
 
@@ -122,4 +134,35 @@ export async function getEpicTasks(epic_id:string) {
   }
 }
 
+
+
+export async function getTaskDetails(epic_id:string,id:string) {
+  try {
+
+
+    const response = await fetchWithAuth(
+      `${baseUrl}/rest/v1/project_tasks?project_id=eq.${epic_id}&id=eq.${id}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          apikey: apiKey,
+          
+        },
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || "get  task details failed");
+    }
+
+    
+  return data?.[0] || null;
+  } catch (error) {
+    console.log("get  task details failed", error);
+    throw error;
+  }
+}
 
