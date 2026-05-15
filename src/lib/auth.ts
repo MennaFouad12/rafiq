@@ -66,15 +66,17 @@ export async function Signin(email: string, password: string) {
     const { access_token, refresh_token, user } = res;
 
     // ✅ تخزين في cookies
+    const secureCookie = window.location.protocol === "https:";
+
     Cookies.set("access_token", access_token, {
       expires: 1, // يوم
-      secure: true,
+      secure: secureCookie,
       sameSite: "Lax",
     });
 
     Cookies.set("refresh_token", refresh_token, {
       expires: 7,
-      secure: true,
+      secure: secureCookie,
       sameSite: "Lax",
     });
 
@@ -117,10 +119,12 @@ async function refreshToken() {
   }
 
   // ✅ تحديث التوكن
+const secureCookie = window.location.protocol === "https:";
+
   Cookies.set("access_token", res.access_token, {
-    expires: 1,
-   secure: true,
-  sameSite: "Lax", // ✅ بدل Strict
+      expires: 1,
+      secure: secureCookie,
+      sameSite: "Lax", // ✅ بدل Strict
   });
 
   return res.access_token;
@@ -233,6 +237,7 @@ catch (error) {
 
 
 
+
 export async function resetPass(password: string, accessToken: string) {
 try {
   let response = await fetch(`${baseUrl}/auth/v1/user`, {
@@ -249,8 +254,14 @@ try {
   })
   })
   const res=await response.json();
+  console.log("reset response", res);
   if(!response.ok){
-throw new Error(res.error||"reset failed");
+throw new Error(
+  res.error ||
+  res.message ||
+  res.msg ||
+  "reset failed"
+);
 
   }
 

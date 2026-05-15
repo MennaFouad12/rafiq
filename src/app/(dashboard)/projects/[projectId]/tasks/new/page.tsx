@@ -108,7 +108,7 @@ export default function AddTaskPage() {
         projectId
       );
 
-
+  router.push(`/projects/${projectId}/tasks`);
     } catch (err) {
       console.log("Add project error:", err);
     }

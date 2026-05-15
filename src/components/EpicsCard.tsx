@@ -1,5 +1,7 @@
 import React from 'react'
 import { useRouter } from "next/navigation";
+import CreatedByIcon from './icons/CreatedBy-icon';
+import DateIcon from './icons/date-icon';
 export default function EpicsCard({epic,onClick}: any) {
   const getInitials = (name: string) => {
       if (!name) return "U";
@@ -10,17 +12,26 @@ export default function EpicsCard({epic,onClick}: any) {
     ?.join("")
     ?.toUpperCase();
 };
-console.log(epic);
+// console.log(epic);
 
+const formatDate = (date?: string) => {
+  if (!date) return "-";
+
+  return new Date(date).toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+};
 
   const router = useRouter();
   return (
     
     <div  onClick={onClick} 
           
-            className="bg-white rounded-lg p-5  shadow-sm transition"
+            className="bg-white rounded-lg p-5 border-l-4 border-primary  shadow-sm transition"
           >
-            <span className='bg-surface-highest px-2 5 py-1' >{epic.epic_id}</span>
+            <span className='bg-surface-highest text-primary px-2 5 py-1' >{epic.epic_id}</span>
           
             <h2 className="font-semibold text-gray-900 mt-3 mb-2">
               {epic.title}
@@ -53,8 +64,11 @@ console.log(epic);
             </p> */}
 <hr className="my-4 text-gray-200" />
             <div className="text-xs flex justify-between text-gray-400">
-              <span className="uppercase font-bold tracking-wide text-[#737685]">Created at</span>
-              <div className="text-gray-600 mt-1 font-semibold">{new Date(epic.created_at).toLocaleDateString("en-GB")}</div>
+              <div className="uppercase font-bold flex items-center tracking-wide text-[#737685]"><CreatedByIcon/> <span className='px-2 text-2xs'>Created by</span> {epic.created_by.name} </div>
+              <div className="text-gray-600 mt-1 font-semibold flex items-center"><span className='px-2' ><DateIcon/></span>
+
+                 {formatDate(epic.created_at)}</div>
+
             </div>
           </div>
   )

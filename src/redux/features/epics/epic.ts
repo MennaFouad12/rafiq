@@ -1,4 +1,4 @@
-import { getProjectEpics, getSingleEpic, createProjectEpic } from '@/lib/epics';
+import { getProjectEpics, getSingleEpic, createProjectEpic, updateProjectEpic } from '@/lib/epics';
 // import { addepic } from './epic';
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
@@ -30,7 +30,17 @@ export const fetchepics = createAsyncThunk(
     }
   }
 );
-
+export const updateEpicThunk = createAsyncThunk(
+  "epics/updateEpic",
+  async ({ epicId, data }: any, { rejectWithValue }) => {
+    try {
+      const res = await updateProjectEpic(epicId, data);
+      return res[0];
+    } catch (err: any) {
+      return rejectWithValue(err.message);
+    }
+  }
+);
 
 export const addepic = createAsyncThunk(
   "epics/addepic",
@@ -88,7 +98,7 @@ const initialState: epicsState = {
   error: null,
 
   currentPage: 1,
-  limit: 10,
+  limit: 6,
   totalCount: 0,
 };
 
@@ -111,14 +121,24 @@ const epicsSlice = createSlice({
         state.error = null;
       })
       .addCase(fetchepics.fulfilled, (state, action) => {
-        state.loadingEpic = false;
-      if (state.currentPage === 1) {
+  state.loadingEpic = false;
+  state.error = null;
+
   state.epics = action.payload.data;
-} else {
-  state.epics = [...state.epics, ...action.payload.data];
-}
-        state.totalCount = action.payload.totalCount;
-      })
+
+  state.currentPage = action.meta.arg.page || 1;
+
+  state.totalCount = action.payload.totalCount;
+})
+//       .addCase(fetchepics.fulfilled, (state, action) => {
+//         state.loadingEpic = false;
+//       if (state.currentPage === 1) {
+//   state.epics = action.payload.data;
+// } else {
+//   state.epics = [...state.epics, ...action.payload.data];
+// }
+//         state.totalCount = action.payload.totalCount;
+//       })
       .addCase(fetchepics.rejected, (state, action) => {
         state.loadingEpic = false;
         state.error = action.payload as string;
@@ -151,7 +171,25 @@ const epicsSlice = createSlice({
     .addCase(addepic.rejected, (state, action) => {
       state.addingEpic = false;
       state.error = action.payload as string; 
-    })
+    }).addCase(updateEpicThunk.fulfilled, (state, action) => {
+  const updated = action.payload;
+
+  state.singleEpic = updated;
+console.log("updated from slice", updated);
+console.log("epics from slice", state.epics);
+  state.epics = state.epics.map((epic) => {
+    if (epic.id === updated.id) {
+      return {
+        ...epic,
+        title: updated.title,
+        description: updated.description,
+        assignee_id: updated.assignee_id,
+        deadline: updated.deadline,
+      };
+    }
+    return epic;
+  });
+});
 
   },
 

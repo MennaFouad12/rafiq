@@ -52,8 +52,33 @@ export default function page() {
     ? params.projectId[0]
     : params.projectId;
 
-  const limit = 6;
+const [limit, setLimit] = React.useState(6);
+
+useEffect(() => {
+  const handleResize = () => {
+    if (window.innerWidth < 768) {
+      setLimit(1000); // أو totalCount لو متاح
+    } else {
+      setLimit(6);
+    }
+  };
+
+  handleResize();
+
+  window.addEventListener("resize", handleResize);
+
+  return () => window.removeEventListener("resize", handleResize);
+}, []);
   const totalPages = Math.ceil(totalCount / limit);
+
+  console.log("PAGINATION DEBUG:", {
+    currentPage,
+    totalCount,
+    limit,
+    totalPages,
+    epicsLength: epics.length,
+    debouncedSearch,
+  });
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedSearch(search);
@@ -79,23 +104,23 @@ export default function page() {
         search: debouncedSearch,
       })
     );
-  }, [dispatch, currentPage, projectId, debouncedSearch]);
+  }, [ currentPage, projectId, debouncedSearch,limit]);
 
   return (
     <div className="min-h-screen bg-gray-50 p-8">
 
       {/* HEADER */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col md:flex-row  md:items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-semibold text-gray-900">Epics</h1>
-          <p className="text-sm text-gray-500">
+          <h1 className="text-2xl font-semibold text-gray-900 ">Epics</h1>
+          <p className="text-sm text-gray-500 mb-5 ">
             Manage and curate your epics
           </p>
         </div>
         <div className="flex items-center">
 
           <SearchInput
-            placeholder="Search epics..."
+            placeholder="Search epics ... "
             onSearch={(value) => {
               setSearch(value);
               setCurrentPage(1);
@@ -190,7 +215,7 @@ export default function page() {
 
       {/*  DATA */}
       {!loadingEpic && !error && epics.length > 0 && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-1 lg:grid-cols-2 gap-6">
           {epics.map((epic) => (
             <EpicsCard
               key={epic.id}
@@ -224,13 +249,14 @@ export default function page() {
       </span>
 
       {/* PAGINATION */}
+      <div className="hidden md:flex justify-end mt-6">
       <Pagination
         currentPage={currentPage}
         totalCount={totalCount}
         limit={limit}
         onPageChange={(page) => setCurrentPage(page)}
       />
-
+</div>
       {/* MODAL */}
       <EpicDetailsModal
         isOpen={isModalOpen}

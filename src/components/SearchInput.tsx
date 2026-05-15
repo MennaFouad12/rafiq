@@ -37,7 +37,7 @@ export default function SearchInput({
         value={value}
         onChange={(e) => setValue(e.target.value)}
         placeholder={placeholder}
-        className="w-full pl-10 pr-3 py-2 rounded-md bg-surface-highest"
+        className="w-full pl-10 pr-3 py-2 rounded-md focus:outline-none bg-surface-highest"
       />
     </div>
   );

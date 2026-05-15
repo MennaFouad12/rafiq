@@ -8,16 +8,64 @@ import { useParams } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { fetchtasks } from "@/redux/features/tasks/task";
 import Pagination from "./Pagination";
-
+  const STATUS_COLORS: Record<string, {
+    background: string;
+    text: string;
+  }> = {
+    TO_DO: {
+      background: '#FEE2E2',
+      text: '#B91C1C',
+    },
+    IN_PROGRESS: {
+      background: '#003D9B',
+      text: '#FFFFFF',
+    },
+    BLOCKED: {
+      background: '#BA1A1A',
+      text: '#FFFFFF',
+    },
+    IN_REVIEW: {
+      background: '#8B5CF6',
+      text: '#FFFFFF',
+    },
+    READY_FOR_QA: {
+      background: '#10B981',
+      text: '#FFFFFF',
+    },
+    REOPENED: {
+      background: '#EC4899',
+      text: '#FFFFFF',
+    },
+    READY_FOR_PRODUCTION: {
+      background: '#14B8A6',
+      text: '#FFFFFF',
+    },
+    DONE: {
+      background: '#004E32',
+      text: '#FFFFFF',
+    },
+  };
 type Task = {
   id: string;
   title: string;
   status: string;
 };
 
+const formatDate = (date?: string) => {
+  if (!date) return "-";
+
+  return new Date(date).toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+};
+
 export default function ListView({
+  search,
   onSelectTask,
 }: {
+  search: string;
   onSelectTask: (task: { taskId: string }) => void;
 }) {
   // console.log("list view tasks",tasks);
@@ -44,24 +92,41 @@ const formatDate = (date?: string) =>
     ? params.projectId[0]
     : params.projectId;
 
-  useEffect(() => {
-    if (!projectId) return;
+useEffect(() => {
+  if (!projectId) return;
 
-    dispatch(
-      fetchtasks({
-        projectId,
-        page: currentPage,
-        limit,
-      })
-    );
-  }, [projectId, currentPage]); 
+  setCurrentPage(1);
+
+  dispatch(
+    fetchtasks({
+      projectId,
+      page: 1,
+      limit,
+      search,
+    })
+  );
+}, [projectId, search]);
+
+
+useEffect(() => {
+  if (!projectId) return;
+
+  dispatch(
+    fetchtasks({
+      projectId,
+      page: currentPage,
+      limit,
+      search,
+    })
+  );
+}, [currentPage]);
 
   return (
 
 
     <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
       {/* Header - شاشات كبيرة بس */}
-      <div className="hidden lg:grid grid-cols-6 px-6 py-4 text-sm font-semibold text-gray-500 border-b">
+      <div className="hidden lg:grid grid-cols-6 px-6 py-4 text-sm font-semibold text-gray-700  bg-surface-low">
         <span>Task ID</span>
         <span>Title</span>
         <span>Status</span>
@@ -88,18 +153,23 @@ const formatDate = (date?: string) =>
             </div>
 
             <div>
-              <span className="text-xs px-2 py-1 rounded bg-gray-100">
+              <span
+                className="text-xs px-2 py-1 rounded font-bold "
+                style={{
+                  backgroundColor: STATUS_COLORS[task.status]?.background,
+                  color: STATUS_COLORS[task.status]?.text,
+                }}
+              >
                 {task.status}
               </span>
             </div>
 
             <div className="text-sm text-gray-600">
-              {task.due_date && new Date(task.due_date).toLocaleDateString("en-GB")}
-
+              {formatDate(task.due_date)}
             </div>
 
             <div className="flex items-center gap-2">
-              <Avatar name={task.assignee?.name} />
+              <Avatar name={task.assignee?.name} palette={{ color: STATUS_COLORS[task.status]?.text, backgroundColor:  STATUS_COLORS[task.status]?.background}} />
               <span>{task.assignee?.name || "No Name"}</span>
             </div>
 

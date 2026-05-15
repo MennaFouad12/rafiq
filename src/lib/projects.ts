@@ -2,12 +2,96 @@ import { fetchWithAuth } from "./auth";
 
 const baseUrl="https://lwsctewpcxlvwjixzdky.supabase.co"
 const apiKey="sb_publishable_WueluaPFskLbogGJGAe6-Q_U_Jvc2Qj"
-export async function getProjects(page: number, limit: number) {
+// export async function getProjects(page: number, limit: number) {
+//   try {
+//     const offset = (page - 1) * limit;
+
+//     const response = await fetchWithAuth(
+//       `${baseUrl}/rest/v1/rpc/get_projects?limit=${limit}&offset=${offset}`,
+//       {
+//         method: "GET",
+//         headers: {
+//           "Content-Type": "application/json",
+//           apikey: apiKey,
+//           Prefer: "count=exact",
+//         },
+//       }
+//     );
+
+//     const data = await response.json();
+
+//     if (!response.ok) {
+//       throw new Error(data.error || "get projects failed");
+//     }
+
+    
+    // const contentRange = response.headers.get("content-range");
+
+    // let totalCount = 0;
+    // if (contentRange) {
+    //   totalCount = parseInt(contentRange.split("/")[1]);
+    // }
+
+//     return {
+//       data,
+//       totalCount,
+//     };
+//   } catch (error) {
+//     console.log("get projects failed", error);
+//     throw error;
+//   }
+// }
+
+export async function getProjects({
+  limit,
+  offset,
+}: {
+  limit?: number;
+  offset?: number;
+}) {
   try {
-    const offset = (page - 1) * limit;
+    const response = await fetchWithAuth(
+    `${baseUrl}/rest/v1/rpc/get_projects?limit=${limit}&offset=${offset}`,
+      {
+          method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          apikey: apiKey,
+          Prefer: "count=exact",
+        },
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || "Get projects failed");
+    }
+
+        const contentRange = response.headers.get("content-range");
+
+    let totalCount = 0;
+    if (contentRange) {
+      totalCount = parseInt(contentRange.split("/")[1]);
+    }
+
+    console.log("Projects fetched successfully", data);
+    return {
+      projects: data,
+      total: totalCount,
+      hasMore: (offset ?? 0) + data.length < totalCount,
+    };
+  } catch (error) {
+    console.log("Get projects failed", error);
+    throw error;
+  }
+}
+export async function getAllProjects() {
+  try {
+  
 
     const response = await fetchWithAuth(
-      `${baseUrl}/rest/v1/rpc/get_projects?limit=${limit}&offset=${offset}`,
+      `${baseUrl}/rest/v1/rpc/get_projects`,
       {
         method: "GET",
         headers: {
@@ -25,25 +109,16 @@ export async function getProjects(page: number, limit: number) {
     }
 
     
-    const contentRange = response.headers.get("content-range");
+  
 
-    let totalCount = 0;
-    if (contentRange) {
-      totalCount = parseInt(contentRange.split("/")[1]);
-    }
+  
 
-    return {
-      data,
-      totalCount,
-    };
+    return data;
   } catch (error) {
     console.log("get projects failed", error);
     throw error;
   }
 }
-
-
-
 
 export async function getSingleProject(project_id: string) {
   try {
@@ -167,4 +242,76 @@ export async function getProjectMembers(project_id: string) {
     console.log("get project members failed", error);
     throw error;
   }
+}
+export async function inviteMember(p_email:string,p_project_id:string,p_app_url:string,p_base_url:string){
+
+try {
+  let response = await fetchWithAuth(`${baseUrl}/rest/v1/rpc/invite_member`, {
+    method:"post",
+    headers:{
+      "Content-Type":"application/json",
+      "apikey":apiKey,
+      Prefer: "return=representation"
+    },
+    body: JSON.stringify({ p_email,p_project_id,p_app_url,p_base_url }),
+  })
+
+  let res;
+
+try {
+  res = await response.json();
+} catch {
+  res = null;
+}
+  if(!response.ok){
+throw new Error(res.error||"invite member failed");
+
+  }
+return res;
+
+}
+
+catch (error) {
+  console.log("invite member failed",error);
+  throw error;
+}
+
+}
+
+export async function acceptInvite(p_token:string){
+
+
+try {
+  let response = await fetchWithAuth(`${baseUrl}/rest/v1/rpc/accept_invitation`, {
+    method:"post",
+    headers:{
+      "Content-Type":"application/json",
+      "apikey":apiKey,
+      Prefer: "return=representation"
+    },
+    body: JSON.stringify({ p_token }),
+  })
+
+  let res;
+
+try {
+  res = await response.json();
+} catch {
+  res = null;
+}
+  if(!response.ok){
+throw new Error(res.error||"accept invite failed");
+
+  }
+return res;
+
+}
+
+catch (error) {
+  console.log("accept invite failed",error);
+  throw error;
+}
+
+
+
 }

@@ -1,0 +1,348 @@
+// "use client";
+
+// import ProjectsListSkeleton from "@/components/skeletons/project-card-skeleton";
+// import { useInfiniteScroll } from "@/lib/hooks/use-infinite-scroll";
+// import { useIsMobile } from "@/lib/hooks/use-mobile";
+// import { useCallback, useEffect, useState } from "react";
+// import EmptyState from "./empty-state";
+// import Header from "./header";
+// import { ROUTES } from "@/lib/constant/routes.constants";
+// import ProjectCard from "./project-card";
+// import Link from "next/link";
+// import Pagination from "./pagination";
+// import { getProjects } from "@/lib/projects";
+
+// // import ProjectCard from "./project-card";
+// // import EmptyState from "./empty-state";
+// // import Header from "./header";
+// // import PlusIcon from "@/components/icons/plus-icon";
+// // import Link from "next/link";
+// // import Pagination from "./pagination";
+// // import UseGetProjects from "../hooks/use-get-projects";
+// // import ProjectsListSkeleton from "@/components/skeletons/project-card.skeleton";
+// // import { useIsMobile } from "@/lib/hooks/use-mobile";
+// // import { useState, useCallback } from "react";
+// // import { useInfiniteScroll } from "@/lib/hooks/use-infinite-scroll";
+// // import { ROUTES } from "@/lib/constants/routes.constants";
+
+// type Props = {
+//   searchParams: { page?: string };
+// };
+
+// export default function ProjectsList({ searchParams }: Props) {
+//   const limit = 6;
+//   const isMobile = useIsMobile();
+
+//   const [currentPage, setCurrentPage] = useState(
+//     () => Number(searchParams?.page) || 1
+//   );
+
+//   const offset = (currentPage - 1) * limit;
+
+//   // const { projects, total, isLoading, isInitialLoad, hasMore } = UseGetProjects(
+//   //   { limit, offset, append: isMobile }
+//   // );
+// // const { projects, loadingProjects, error, totalCount } = useAppSelector(
+// //     (state) => state.projects
+// //   );
+//   // Stable callback so the hook's dependency array stays tight
+
+
+//   const [projects, setProjects] = useState([]);
+// const [loading, setLoading] = useState(false);
+
+// useEffect(() => {
+//   const fetchProjects = async () => {
+//     try {
+//       setLoading(true);
+
+//       const data = await getProjects({
+//         limit: 10,
+//         offset: 0,
+//       });
+
+//       setProjects(data.projects);
+//     } catch (error) {
+//       console.log(error);
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   fetchProjects();
+// }, []);
+//   const handleLoadMore = useCallback(() => {
+//     setCurrentPage((prev) => prev + 1);
+//   }, []);
+
+//   const { lastElementRef } = useInfiniteScroll({
+//     isLoading,
+//     hasMore,
+//     onLoadMore: handleLoadMore,
+//     enabled: isMobile,
+//   });
+
+//   // Show skeleton only on the very first load, not on every paginated fetch
+//   if (isInitialLoad && isLoading) {
+//     return <ProjectsListSkeleton />;
+//   }
+
+//   if (!isLoading && !isInitialLoad && projects.length === 0) {
+//     return <EmptyState />;
+//   }
+
+//   const totalPages = Math.ceil(total / limit);
+//   const hasNextPage = currentPage < totalPages;
+//   const shownUpTo = Math.min(currentPage * limit, total);
+
+//   return (
+//     <>
+//       <Header
+//         title="Projects"
+//         subtitle="Manage and curate your projects"
+//         buttonText="Create new project"
+//         linkHref={ROUTES.project.add}
+//         leftIcon="+"
+//         buttonClassName="hidden md:block"
+//       />
+
+//       <div className="grid md:grid-cols-3 gap-6">
+//         {projects?.map((project, index) => {
+//           const isLast = projects.length === index + 1;
+//           return (
+//             <ProjectCard
+//               id={project.id}
+//               key={project.id}
+//               ref={isLast ? lastElementRef : undefined}
+//               title={project.name}
+//               createdAt={project.created_at}
+//               desc={project.description}
+//             />
+//           );
+//         })}
+
+//         {/* Loading indicator for infinite scroll */}
+//         {isMobile && isLoading && (
+//           <div className="col-span-full flex justify-center py-4">
+//             <span className="text-secondary text-sm">Loading more...</span>
+//           </div>
+//         )}
+
+//         {!isMobile && (
+//           <div className="bg-white flex flex-col gap-3.5 p-6 rounded-lg min-h-55 border-dashed border-slate-light/20 border-2 justify-center items-center">
+//             <Link
+//               className="min-h-12 min-w-12 bg-surface-low flex items-center justify-center rounded-xl"
+//               href={ROUTES.project.add}
+//             >
+//           +
+//             </Link>
+//             <span className="uppercase text-secondary text-sm font-bold">
+//               add project
+//             </span>
+//           </div>
+//         )}
+//       </div>
+
+//       {!hasMore && isMobile && (
+//         <p className="my-3 text-end font-bold text-sm text-secondary capitalize">
+//           no more projects
+//         </p>
+//       )}
+
+//       {isMobile && (
+//         <Link
+//           className="w-14 h-14 sm:hidden rounded-xl ms-auto bg-primary flex items-center justify-center mb-15"
+//           href={ROUTES.project.add}
+//         >
+//           <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+//             <path d="M6 8H0V6H6V0H8V6H14V8H8V14H6V8Z" fill="white" />
+//           </svg>
+//         </Link>
+//       )}
+
+//       {!isMobile && (
+//         <Pagination
+//           perPage={shownUpTo}
+//           totalCount={total}
+//           currentPage={currentPage}
+//           totalPages={totalPages}
+//           hasNextPage={hasNextPage}
+//         />
+//       )}
+//     </>
+//   );
+// }
+
+
+"use client";
+
+import ProjectsListSkeleton from "@/components/skeletons/project-card-skeleton";
+import { useInfiniteScroll } from "@/lib/hooks/use-infinite-scroll";
+import { useIsMobile } from "@/lib/hooks/use-mobile";
+import { useCallback, useEffect, useState } from "react";
+import EmptyState from "./empty-state";
+import Header from "./header";
+import { ROUTES } from "@/lib/constant/routes.constants";
+import ProjectCard from "./project-card";
+import Link from "next/link";
+import Pagination from "./pagination";
+// import { getProjects } from "@/lib/projects";
+import { projectsList } from "@/lib/types/projects.type";
+import { getProjects } from "@/lib/projects";
+// import { projectsList } from "@/lib/types/projects.type";
+
+type Props = {
+  searchParams: { page?: string };
+};
+
+export default function ProjectsList({ searchParams }: Props) {
+  const limit = 6;
+  const isMobile = useIsMobile();
+
+  const [currentPage, setCurrentPage] = useState(
+    () => Number(searchParams?.page) || 1
+  );
+
+  const [projects, setProjects] = useState<projectsList>([]);
+  const [total, setTotal] = useState(0);
+
+  const [isLoading, setIsLoading] = useState(false);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
+
+  const offset = (currentPage - 1) * limit;
+
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        setIsLoading(true);
+
+      const data = await getProjects({
+  limit,
+  offset,
+});
+
+        setTotal(data.total);
+
+        setProjects((prev) =>
+          isMobile && currentPage > 1
+            ? [...prev, ...data.projects]
+            : data.projects
+        );
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setIsLoading(false);
+        setIsInitialLoad(false);
+      }
+    };
+
+    fetchProjects();
+  }, [currentPage, limit, isMobile]);
+
+  const hasMore = projects.length < total;
+
+  const handleLoadMore = useCallback(() => {
+    if (!isLoading && hasMore) {
+      setCurrentPage((prev) => prev + 1);
+    }
+  }, [isLoading, hasMore]);
+
+  const { lastElementRef } = useInfiniteScroll({
+    isLoading,
+    hasMore,
+    onLoadMore: handleLoadMore,
+    enabled: isMobile,
+  });
+
+  if (isInitialLoad && isLoading) {
+    return <ProjectsListSkeleton />;
+  }
+
+  if (!isLoading && !isInitialLoad && projects.length === 0) {
+    return <EmptyState />;
+  }
+
+  const totalPages = Math.ceil(total / limit);
+  const hasNextPage = currentPage < totalPages;
+  const shownUpTo = Math.min(currentPage * limit, total);
+
+  return (
+    <>
+      <Header
+        title="Projects"
+        subtitle="Manage and curate your projects"
+        buttonText="Create new project"
+        linkHref={ROUTES.project.add}
+        leftIcon="+"
+        buttonClassName="hidden md:block"
+      />
+
+      <div className="grid md:grid-cols-3 gap-6">
+        {projects?.map((project, index) => {
+          const isLast = projects.length === index + 1;
+
+          return (
+            <ProjectCard
+              id={project.id}
+            key={`${project.id}-${index}`}
+              ref={isLast ? lastElementRef : undefined}
+              title={project.name}
+              createdAt={project.created_at}
+              desc={project.description}
+            />
+          );
+        })}
+
+        {isMobile && isLoading && (
+          <div className="col-span-full flex justify-center py-4">
+            <span className="text-secondary text-sm">
+              Loading more...
+            </span>
+          </div>
+        )}
+
+        {!isMobile && (
+          <div className="bg-white flex flex-col gap-3.5 p-6 rounded-lg min-h-55 border-dashed border-slate-light/20 border-2 justify-center items-center">
+            <Link
+              className="min-h-12 min-w-12 bg-surface-low flex items-center justify-center rounded-xl"
+              href={ROUTES.project.add}
+            >
+              +
+            </Link>
+
+            <span className="uppercase text-secondary text-sm font-bold">
+              add project
+            </span>
+          </div>
+        )}
+      </div>
+
+      {!hasMore && isMobile && (
+        <p className="my-3 text-end font-bold text-sm text-secondary capitalize">
+          no more projects
+        </p>
+      )}
+
+      {isMobile && (
+        <Link
+          className="w-14 h-14 sm:hidden rounded-xl ms-auto bg-primary flex items-center justify-center mb-15"
+          href={ROUTES.project.add}
+        >
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path d="M6 8H0V6H6V0H8V6H14V8H8V14H6V8Z" fill="white" />
+          </svg>
+        </Link>
+      )}
+
+      {!isMobile && (
+        <Pagination
+          perPage={shownUpTo}
+          totalCount={total}
+          currentPage={currentPage}
+          totalPages={totalPages}
+          hasNextPage={hasNextPage}
+        />
+      )}
+    </>
+  );
+}

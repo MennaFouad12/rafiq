@@ -1,78 +1,10 @@
-// // components/Column.tsx
-// 'use client';
+
 
 import Avatar from "./Avatar";
 import AddTaskIcon from "./icons/AddTask-icon";
 import TaskCard from "./TaskCard";
 
-// import { Task } from "./providers/tasks";
-// import { TaskCard } from "./TaskCard";
-
-
-
-// interface ColumnProps {
-//   title: string;
-//   status: Task['status'];
-//   tasks: Task[];
-//   onTaskMove: (taskId: string, newStatus: Task['status']) => void;
-//   color: string;
-// }
-
-// export function Column({ title, status, tasks, onTaskMove, color }: ColumnProps) {
-//   const handleDragOver = (e: React.DragEvent) => {
-//     e.preventDefault();
-//     e.dataTransfer.dropEffect = 'move';
-//   };
-
-//   const handleDrop = (e: React.DragEvent) => {
-//     e.preventDefault();
-//     const taskId = e.dataTransfer.getData('text/plain');
-//     onTaskMove(taskId, status);
-//   };
-
-//   const getCountColor = () => {
-//     switch (status) {
-//       case 'todo': return 'bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-300';
-//       case 'in-progress': return 'bg-blue-200 text-blue-700 dark:bg-blue-800 dark:text-blue-200';
-//       case 'blocked': return 'bg-red-200 text-red-700 dark:bg-red-800 dark:text-red-200';
-//       case 'urgent': return 'bg-amber-200 text-amber-700 dark:bg-amber-800 dark:text-amber-200';
-//       case 'completed': return 'bg-emerald-200 text-emerald-700 dark:bg-emerald-800 dark:text-emerald-200';
-//       default: return 'bg-slate-200 text-slate-700';
-//     }
-//   };
-
-//   return (
-//     <div
-//       onDragOver={handleDragOver}
-//       onDrop={handleDrop}
-//       className={`rounded-xl p-3 ${color} min-w-[280px] transition-all`}
-//     >
-//       <div className="flex items-center justify-between mb-3 px-1">
-//         <div className="flex items-center gap-2">
-//           <h3 className="font-semibold text-slate-700 dark:text-slate-200">{title}</h3>
-//           <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${getCountColor()}`}>
-//             {tasks.length}
-//           </span>
-//         </div>
-//         <button className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">
-//           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-//             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
-//           </svg>
-//         </button>
-//       </div>
-//       <div className="space-y-2">
-//         {tasks.map(task => (
-//           <TaskCard key={task.id} task={task} onTaskMove={onTaskMove} />
-//         ))}
-//         {tasks.length === 0 && (
-//           <div className="text-center py-6 text-xs text-slate-400 dark:text-slate-500 border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-lg">
-//             Drop tasks here
-//           </div>
-//         )}
-//       </div>
-//     </div>
-//   );
-// }
+import { useDroppable } from "@dnd-kit/core";
 
 
 
@@ -100,6 +32,9 @@ export default function Column({
   length: number;
   tasks: Task[];
 }) {
+    const { setNodeRef } = useDroppable({
+    id: title, 
+  });
 
   const formatDate = (date?: string) =>
     date
@@ -110,7 +45,7 @@ export default function Column({
       })
       : "-";
   return (
-    <div className=" rounded-xl p-3 w-64 flex-shrink-0">
+    <div ref={setNodeRef} className=" rounded-xl p-3 w-64 flex-shrink-0">
       {/* Header */}
       <div className="flex justify-between items-center mb-3">
         <h3 className="text-sm font-semibold">

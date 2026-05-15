@@ -30,13 +30,37 @@ if (search) {
       throw new Error(data.error || "get epics failed");
     }
 
-    
-    const contentRange = response.headers.get("content-range");
+    // Get total count from a separate query
+    let countUrl = `${baseUrl}/rest/v1/project_epics?project_id=eq.${project_id}`;
+    if (search) {
+      countUrl += `&title=ilike.%25${search}%25`;
+    }
 
+    const countResponse = await fetchWithAuth(
+      countUrl,
+      {
+        method: "HEAD", // Use HEAD to get only headers
+        headers: {
+          apikey: apiKey,
+          Prefer: "count=exact",
+        },
+      }
+    );
+
+    const contentRange = countResponse.headers.get("content-range");
     let totalCount = 0;
     if (contentRange) {
       totalCount = parseInt(contentRange.split("/")[1]);
     }
+
+    console.log("EPICS API RESPONSE:", {
+      dataLength: data.length,
+      contentRange,
+      totalCount,
+      page,
+      limit,
+      search,
+    });
 
     return {
       data,

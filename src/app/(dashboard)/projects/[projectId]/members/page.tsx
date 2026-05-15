@@ -3,10 +3,11 @@
 
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { fetchProjectMembers } from "@/redux/features/project/project";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
+import AddMemberModel from "@/components/AddMemberModel";
 
 const roleStyles: Record<string, string> = {
   owner: "bg-blue-100 text-blue-800",
@@ -59,6 +60,7 @@ const SkeletonCard = () => (
 export default function MembersPage() {
   const dispatch = useAppDispatch();
   const params = useParams();
+  const router = useRouter();
 
   const projectId = Array.isArray(params.projectId)
     ? params.projectId[0]
@@ -67,7 +69,7 @@ export default function MembersPage() {
   const { projectMembers, loadingMembers } = useAppSelector(
     (state) => state.projects
   );
-
+const [open, setOpen] = useState(false);
   useEffect(() => {
     if (projectId) {
       dispatch(fetchProjectMembers(projectId));
@@ -85,9 +87,22 @@ export default function MembersPage() {
 
             <span className="text-primary"> Project Members</span>
           </p>
-          <h1 className="text-2xl font-semibold text-gray-900 text-center lg:text-left">
-          Project Members
-          </h1>
+          <div className="flex items-center justify-between mb-8">
+                <div>
+                  <h1 className="text-2xl font-semibold text-gray-900">Project Members</h1>
+                
+                </div>
+                <div className="flex items-center">
+        
+                  
+                  <button
+                   onClick={() => setOpen(true)}
+                    className="hidden md:block ms-3  bg-[linear-gradient(95.71deg,var(--color-primary)_0%,var(--color-primary-container)_100%)] text-white py-2 px-6 rounded-md"
+                  >
+                    Add New Member
+                  </button>
+                </div>
+              </div>
         </div>
 
       {/* <h1 className="lg:hidden text-2xl font-bold text-gray-900 mb-4 text-center">
@@ -176,9 +191,16 @@ export default function MembersPage() {
       </div>
 
     
-      <button className="lg:hidden fixed bottom-6 right-6 w-14 h-14 bg-primary text-white rounded-2xl shadow-lg flex items-center justify-center text-2xl hover:bg-blue-700 active:scale-95 transition-all">
+      <button   onClick={() => setOpen(true)} className="lg:hidden fixed bottom-6 right-6 w-14 h-14 bg-primary text-white rounded-2xl shadow-lg flex items-center justify-center text-2xl hover:bg-blue-700 active:scale-95 transition-all">
         +
       </button>
+
+
+      {open && (
+  <AddMemberModel
+    onClose={() => setOpen(false)}
+  />
+)}
     </div>
   );
 }

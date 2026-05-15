@@ -9,6 +9,7 @@ import DropdownIcon from "@/components/icons/dropdown-icon";
 import FilterIcon from "@/components/icons/filter-icon";
 import SearchIcon from "@/components/icons/search-icon";
 import ListView from "@/components/ListView";
+import SearchInput from "@/components/SearchInput";
 import TaskDetailsModal from "@/components/TaskDetailsModel";
 import { useParams } from "next/navigation";
 // import TaskDetailsModal from "@/components/TaskDetailsModal";
@@ -21,7 +22,7 @@ export default function Workboard() {
     ? params.projectId[0]
     : params.projectId;
 
-
+const [search, setSearch] = useState("");
   const [selectedTask, setSelectedTask] = useState<{
     taskId: string;
 
@@ -31,7 +32,7 @@ export default function Workboard() {
     <div className="p-4 md:p-6 bg-gray-50 min-h-screen">
 
       {/* Header */}
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-6">
+      <div className="flex flex-col gap-4 md:flex-row md:items-center justify-between mb-6">
 
         <div>
           <h1 className="text-2xl font-semibold text-gray-900">
@@ -45,19 +46,13 @@ export default function Workboard() {
         <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto md:items-center">
 
           {/* search */}
-          <div className="relative w-full sm:w-72">
-            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
-              <SearchIcon />
-            </div>
-            <input
-              type="text"
-              placeholder="Search tasks..."
-              className="w-full pl-10 pr-3 py-2 rounded-md bg-surface-highest"
-            />
-          </div>
-
+        <SearchInput
+  placeholder="Search tasks..."
+  onSearch={(value) => setSearch(value)}
+  delay={400}
+/>
           {/* select */}
-          <div className="relative w-full sm:w-72">
+          <div className="hidden lg:block  relative w-full sm:w-72">
             <div className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
               <BoardIcon />
             </div>
@@ -65,7 +60,7 @@ export default function Workboard() {
             <select
               value={view}
               onChange={(e) => setView(e.target.value)}
-              className="w-full appearance-none pl-7 pr-5 py-2 rounded-md bg-white border"
+              className=" w-full appearance-none pl-7 pr-5 py-2 rounded-md focus:outline-none "
             >
               <option value="LIST">List View</option>
               <option value="BOARD">Board View</option>
@@ -76,7 +71,7 @@ export default function Workboard() {
             </div>
           </div>
 
-          <div className="bg-surface-highest p-3 rounded-md">
+          <div className="hidden lg:block bg-surface-highest p-3 rounded-md">
             <FilterIcon />
           </div>
         </div>
@@ -84,11 +79,11 @@ export default function Workboard() {
 
       {/* VIEWS */}
       {view === "BOARD" && (
-        <BoardView onSelectTask={setSelectedTask} />
+        <BoardView onSelectTask={setSelectedTask}   search={search} />
       )}
 
       {view === "LIST" && (
-        <ListView onSelectTask={setSelectedTask} />
+        <ListView onSelectTask={setSelectedTask} search={search} />
       )}
 
       {/* MODAL */}

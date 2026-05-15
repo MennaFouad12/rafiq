@@ -1,3 +1,4 @@
+import BottomNav from "@/components/BottomNav";
 import SideBar from "@/components/Sidebar";
 // import { SidebarProvider } from "../../context/sidebar-context";
 import Topbar from "@/components/Topbar";
@@ -21,7 +22,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </main>
         </div>
       </div>
-      {/* <BottomNav /> */}
+      <BottomNav />
     </SidebarProvider>
   );
 }
