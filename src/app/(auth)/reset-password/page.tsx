@@ -1,5 +1,6 @@
 // "use client";
 
+import { Suspense } from "react";
 import ResetPassowrdForm from "./_components/Reset-pass-form";
 
 // import { useEffect, useState } from "react";
@@ -166,6 +167,12 @@ import ResetPassowrdForm from "./_components/Reset-pass-form";
 
 
 export default function page() {
-  return <ResetPassowrdForm />;
+
+    return (
+    <Suspense fallback={<p>Loading...</p>}>
+    <ResetPassowrdForm />
+    </Suspense>
+  );
+
 }
 
