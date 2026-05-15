@@ -117,6 +117,21 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
 // ===================== THUNKS =====================
 
+// export const fetchProjects = createAsyncThunk(
+//   "projects/fetchProjects",
+//   async (
+//     { page, limit }: { page: number; limit: number },
+//     { rejectWithValue }
+//   ) => {
+//     try {
+//       const data = await getProjects(page, limit);
+//       return data;
+//     } catch (error: any) {
+//       return rejectWithValue(error.message);
+//     }
+//   }
+// );
+
 export const fetchProjects = createAsyncThunk(
   "projects/fetchProjects",
   async (
@@ -124,14 +139,17 @@ export const fetchProjects = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
-      const data = await getProjects(page, limit);
+      const data = await getProjects({
+        limit,
+        offset: (page - 1) * limit,
+      });
+
       return data;
     } catch (error: any) {
       return rejectWithValue(error.message);
     }
   }
 );
-
 export const fetchSingleProject = createAsyncThunk(
   "projects/fetchSingle",
   async (projectId: string, { rejectWithValue }) => {
@@ -241,8 +259,8 @@ const projectsSlice = createSlice({
       })
       .addCase(fetchProjects.fulfilled, (state, action) => {
         state.loadingProjects = false;
-        state.projects = action.payload.data;
-        state.totalCount = action.payload.totalCount;
+        state.projects = action.payload.projects;
+        state.totalCount = action.payload.total;
       })
       .addCase(fetchProjects.rejected, (state, action) => {
         state.loadingProjects = false;
