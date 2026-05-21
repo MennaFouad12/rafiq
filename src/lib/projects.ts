@@ -1,4 +1,5 @@
 import { fetchWithAuth } from "./auth";
+import { ProjectFormValues } from "./schemes/projects.schema";
 
 const baseUrl="https://lwsctewpcxlvwjixzdky.supabase.co"
 const apiKey="sb_publishable_WueluaPFskLbogGJGAe6-Q_U_Jvc2Qj"
@@ -152,7 +153,10 @@ export async function getSingleProject(project_id: string) {
 
 
 
-export async function updateProject(name:string ,description:string,project_id: string) {
+export async function updateProject(
+  { name, description }: ProjectFormValues,
+  project_id: string
+) {
   try {
     
     const response = await fetchWithAuth(
@@ -168,7 +172,13 @@ export async function updateProject(name:string ,description:string,project_id: 
       }
     );
 
-    const data = await response.json();
+let data = null;
+
+    try {
+      data = await response.json();
+    } catch {
+      data = null;
+    }
 
     if (!response.ok) {
       throw new Error(data.error || "update projects failed");
@@ -182,7 +192,10 @@ export async function updateProject(name:string ,description:string,project_id: 
     throw error;
   }
 }
-export async function createProject(name:string ,description:string){
+export async function createProject({
+  name,
+  description,
+}: ProjectFormValues){
 
 
 

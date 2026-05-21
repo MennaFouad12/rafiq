@@ -3,11 +3,12 @@
 "use client";
 
 import React, { useEffect } from "react";
-import Avatar from "./Avatar";
+import Avatar from "../../../../../../components/Avatar";
 import { useParams } from "next/navigation";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { fetchtasks } from "@/redux/features/tasks/task";
-import Pagination from "./Pagination";
+import Pagination from "../../../../../../components/Pagination";
+import { formatDate } from "@/lib/utils/format-date";
   const STATUS_COLORS: Record<string, {
     background: string;
     text: string;
@@ -45,21 +46,9 @@ import Pagination from "./Pagination";
       text: '#FFFFFF',
     },
   };
-type Task = {
-  id: string;
-  title: string;
-  status: string;
-};
 
-const formatDate = (date?: string) => {
-  if (!date) return "-";
 
-  return new Date(date).toLocaleDateString("en-GB", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  });
-};
+
 
 export default function ListView({
   search,
@@ -77,14 +66,7 @@ export default function ListView({
   const { tasks, totalCount, loadingTasks } = useAppSelector(
     (state) => state.tasks
   );
-const formatDate = (date?: string) =>
-    date
-      ? new Date(date).toLocaleDateString("en-GB", {
-        day: "2-digit",
-        month: "short",
-        year: "numeric",
-      })
-      : "-";
+
 
   const params = useParams();
 
@@ -169,7 +151,7 @@ useEffect(() => {
             </div>
 
             <div className="flex items-center gap-2">
-              <Avatar name={task.assignee?.name} palette={{ color: STATUS_COLORS[task.status]?.text, backgroundColor:  STATUS_COLORS[task.status]?.background}} />
+              <Avatar   name={task.assignee?.name ?? ""} palette={{ color: STATUS_COLORS[task.status]?.text, backgroundColor:  STATUS_COLORS[task.status]?.background}} />
               <span>{task.assignee?.name || "No Name"}</span>
             </div>
 

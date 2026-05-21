@@ -14,6 +14,7 @@ type EmptyStateProps = {
   title?: string;
 };
 
+
 export default function EmptyState({
   title = `You don’t have any projects yet. Start by defining your first
         architectural workspace to begin tracking tasks and epics.`,

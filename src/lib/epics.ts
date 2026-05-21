@@ -1,66 +1,135 @@
 import { fetchWithAuth } from "./auth";
+import { UpdateEpicFormValues } from "./schemes/epic.schema";
 
 const baseUrl="https://lwsctewpcxlvwjixzdky.supabase.co"
 const apiKey="sb_publishable_WueluaPFskLbogGJGAe6-Q_U_Jvc2Qj"
-export async function getProjectEpics(page: number, limit: number,project_id:string,  search?: string) {
+// export async function getProjectEpics(page: number, limit: number,project_id:string,  search?: string) {
+//   try {
+//   const offset = (page - 1) * limit;
+
+// let url = `${baseUrl}/rest/v1/project_epics?project_id=eq.${project_id}&limit=${limit}&offset=${offset}`;
+
+// if (search) {
+//   url += `&title=ilike.%25${search}%25`;
+// }
+
+//     const response = await fetchWithAuth(
+//       url,
+//       {
+//         method: "GET",
+//         headers: {
+//           "Content-Type": "application/json",
+//           apikey: apiKey,
+//           Prefer: "count=exact",
+//         },
+//       }
+//     );
+
+//     const data = await response.json();
+
+//     if (!response.ok) {
+//       throw new Error(data.error || "get epics failed");
+//     }
+
+//     // Get total count from a separate query
+//     let countUrl = `${baseUrl}/rest/v1/project_epics?project_id=eq.${project_id}`;
+//     if (search) {
+//       countUrl += `&title=ilike.%25${search}%25`;
+//     }
+
+//     const countResponse = await fetchWithAuth(
+//       countUrl,
+//       {
+//         method: "HEAD", // Use HEAD to get only headers
+//         headers: {
+//           apikey: apiKey,
+//           Prefer: "count=exact",
+//         },
+//       }
+//     );
+
+//     const contentRange = countResponse.headers.get("content-range");
+//     let totalCount = 0;
+//     if (contentRange) {
+//       totalCount = parseInt(contentRange.split("/")[1]);
+//     }
+
+//     console.log("EPICS API RESPONSE:", {
+//       dataLength: data.length,
+//       contentRange,
+//       totalCount,
+//       page,
+//       limit,
+//       search,
+//     });
+
+//     return {
+//       data,
+//       totalCount,
+//     };
+//   } catch (error) {
+//     console.log("get epics failed", error);
+//     throw error;
+//   }
+// }
+
+
+
+export async function getProjectEpics(
+  page: number,
+  limit: number,
+  project_id: string,
+  search?: string
+) {
   try {
-  const offset = (page - 1) * limit;
-
-let url = `${baseUrl}/rest/v1/project_epics?project_id=eq.${project_id}&limit=${limit}&offset=${offset}`;
-
-if (search) {
-  url += `&title=ilike.%25${search}%25`;
+    const offset = (page - 1) * limit;
+if (!project_id) {
+  throw new Error("project_id is required");
 }
+    let url = `${baseUrl}/rest/v1/project_epics?project_id=eq.${project_id}&limit=${limit}&offset=${offset}`;
 
-    const response = await fetchWithAuth(
-      url,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          apikey: apiKey,
-          Prefer: "count=exact",
-        },
-      }
-    );
+    if (search) {
+      url += `&title=ilike.%25${encodeURIComponent(search)}%25`;
+      // url += `&title=ilike.*${search}*`;
+    }
+
+    const response = await fetchWithAuth(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        apikey: apiKey,
+        Prefer: "count=exact",
+      },
+    });
 
     const data = await response.json();
-
+console.log(data);
     if (!response.ok) {
       throw new Error(data.error || "get epics failed");
     }
 
-    // Get total count from a separate query
     let countUrl = `${baseUrl}/rest/v1/project_epics?project_id=eq.${project_id}`;
+
     if (search) {
-      countUrl += `&title=ilike.%25${search}%25`;
+      countUrl += `&title=ilike.%25${encodeURIComponent(search)}%25`;
+      // countUrl += `&title=ilike.*${search}*`;
     }
 
-    const countResponse = await fetchWithAuth(
-      countUrl,
-      {
-        method: "HEAD", // Use HEAD to get only headers
-        headers: {
-          apikey: apiKey,
-          Prefer: "count=exact",
-        },
-      }
-    );
+    const countResponse = await fetchWithAuth(countUrl, {
+      method: "HEAD",
+      headers: {
+        apikey: apiKey,
+        Prefer: "count=exact",
+      },
+    });
 
     const contentRange = countResponse.headers.get("content-range");
+
     let totalCount = 0;
+
     if (contentRange) {
       totalCount = parseInt(contentRange.split("/")[1]);
     }
-
-    console.log("EPICS API RESPONSE:", {
-      dataLength: data.length,
-      contentRange,
-      totalCount,
-      page,
-      limit,
-      search,
-    });
 
     return {
       data,
@@ -71,8 +140,6 @@ if (search) {
     throw error;
   }
 }
-
-
 export async function createProjectEpic(title:string ,description:string,project_id:string,assignee_id: string | null,
 deadline: string | null){
 
@@ -150,17 +217,12 @@ export async function getSingleEpic(project_id: string,id:string) {
 
 export async function updateProjectEpic(
   epic_id: string,
-  data: {
-    title?: string;
-    description?: string;
-    assignee_id?: string | null;
-    deadline?: string | null;
-  }
+  data: Partial<UpdateEpicFormValues>
 ) {
   try {
-    const filteredData = Object.fromEntries(
-      Object.entries(data).filter(([_, v]) => v !== undefined)
-    );
+    // const filteredData = Object.fromEntries(
+    //   Object.entries(data).filter(([_, v]) => v !== undefined)
+    // );
 
     let response = await fetchWithAuth(
       `${baseUrl}/rest/v1/epics?id=eq.${epic_id}`,
@@ -171,7 +233,7 @@ export async function updateProjectEpic(
           apikey: apiKey,
           Prefer: "return=representation",
         },
-        body: JSON.stringify(filteredData),
+        body: JSON.stringify( data),
       }
     );
 

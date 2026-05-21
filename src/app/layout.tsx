@@ -4,6 +4,7 @@ import "./globals.css";
 
 import UserInitializer from "@/components/providers/UserInitializer";
 import ReduxProvider from "@/redux/provider";
+import { Toaster } from "sonner";
 
 
 const inter = Inter({
@@ -27,6 +28,7 @@ export default async function RootLayout({
        <ReduxProvider>
           <UserInitializer  />
           {children}
+          <Toaster />
     </ReduxProvider>
       </body>
     </html>

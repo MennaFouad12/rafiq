@@ -89,7 +89,7 @@ const initialState: taskState = {
   totalCount: 0,
 };
 
-/* ───── Helper (dedupe) ───── */
+
 
 const uniqueById = (arr: any[]) => {
   return Array.from(
@@ -179,7 +179,7 @@ reducers: {
         state.tasks = uniqueById(merged);
 
         // grouping by status (based on clean data)
-        const grouped: Record<string, any[]> = {};
+        const grouped : Record<string, any[]> = {};
 
         state.tasks.forEach((task) => {
           const status = task.status;

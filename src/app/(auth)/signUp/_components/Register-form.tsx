@@ -9,7 +9,7 @@ import { signup } from "@/lib/auth";
 import { useRouter } from "next/navigation";
 import { RegisterFormValues, registerSchema } from "@/lib/schemes/auth.schema";
 import SharedTitle from "@/components/shared/shared-title";
-import Input from "../../_components/shared-input";
+import Input from "../../../../components/shared/shared-input";
 import { ValidationChecker } from "../../_components/validation-checker";
 import Button from "@/components/shared/Button";
 import SubmissionError from "@/components/shared/submission-error";

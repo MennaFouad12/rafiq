@@ -7,7 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
-import Input from "../../_components/shared-input";
+import Input from "../../../../components/shared/shared-input";
 import { ValidationChecker } from "../../_components/validation-checker";
 import { resetPasswordRules } from "@/lib/constant/auth.constants";
 import SuccessToast from "@/components/shared/SuccessToast";

@@ -7,7 +7,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 // import { useRouter } from "next/router";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import Input from "../../_components/shared-input";
+import Input from "../../../../components/shared/shared-input";
 import SharedTitle from "@/components/shared/shared-title";
 import Link from "next/link";
 import SubmissionError from "@/components/shared/submission-error";

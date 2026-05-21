@@ -6,7 +6,7 @@ import { ForgotPasswordFormValues, forgotPasswordSchema } from "@/lib/schemes/au
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import Input from "../../_components/shared-input";
+import Input from "../../../../components/shared/shared-input";
 import SharedTitle from "@/components/shared/shared-title";
 import SuccessToast from "@/components/shared/SuccessToast";
 import TimerIcon from "@/components/icons/Timer-icon";

@@ -23,6 +23,7 @@ import ProjectEpicIcon from "./icons/project-epic-icon";
 import ProjectTaskIcon from "./icons/project-task-icon";
 import ProjectMemeberIcon from "./icons/project-member-icon";
 import ProjectDetailsIcon from "./icons/project-details-icon";
+import TotalTasksIcon from "./icons/TotalTasks-icon";
 type Tabs = {
   icon: React.ReactElement;
   title: string;
@@ -31,6 +32,12 @@ type Tabs = {
 };
  const mainTabsList: Tabs[] = [
   { icon: <ProjectIcon />, title: "Projects", href: "/projects", id: 1 },
+    {
+    icon: <TotalTasksIcon />,
+    title: "Project Statistics",
+    href: "my-statistics",
+    id: 2,
+  }
 ];
 
 const projectTabsList: Tabs[] = [
@@ -50,6 +57,7 @@ const projectTabsList: Tabs[] = [
     href: "edit",
     id: 5,
   },
+
 ];
 function SidebarContent({
   isCollapsed,

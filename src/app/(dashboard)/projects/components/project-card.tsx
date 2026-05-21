@@ -24,10 +24,10 @@ type ProjectCardProps = {
 const menuItems = [
   {
     label: "Edit",
-    icon: <EditIcon />,
-    onClick: () => {},
+    icon: <EditIcon />
   },
 ];
+
 export default function ProjectCard({
   title = `Skyline Residence Phase II`,
   desc = `Structural review and aesthetic
