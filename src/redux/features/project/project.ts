@@ -286,7 +286,7 @@ const projectsSlice = createSlice({
       .addCase(fetchSingleProject.fulfilled, (state, action) => {
         state.loadingSingleProject = false;
 
-        // ⚠️ لو API بيرجع { data: [...] } عدلي هنا
+        
         state.singleProject = action.payload[0];
       })
       .addCase(fetchSingleProject.rejected, (state, action) => {
@@ -294,7 +294,7 @@ const projectsSlice = createSlice({
         state.error = action.payload as string;
       })
 
-      // ===== ADD PROJECT =====
+      
       .addCase(addProject.pending, (state) => {
         state.addingProject = true;
         state.error = null;
