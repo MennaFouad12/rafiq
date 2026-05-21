@@ -168,7 +168,7 @@ export default function BoardView({
         {statuses.map((status) => (
           <Column
 
-          onSelectTask={onSelectTask}
+         onSelectTask={onSelectTask || (() => {})}
             key={status}
             title={status}
             length={tasksByStatus?.[status]?.length || 0}
