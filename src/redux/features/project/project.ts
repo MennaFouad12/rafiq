@@ -180,7 +180,11 @@ export const addProject = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
-      const data = await createProject(name, description);
+      const data = await createProject({
+        name,
+        description,
+      });
+
       return data;
     } catch (error: any) {
       return rejectWithValue(error.message);
