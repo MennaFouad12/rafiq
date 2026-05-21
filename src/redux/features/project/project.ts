@@ -202,7 +202,14 @@ export const editProject = createAsyncThunk(
     { rejectWithValue }
   ) => {
     try {
-      const data = await updateProject(name, description, projectId);
+      const data = await updateProject(
+        {
+          name,
+          description,
+        },
+        projectId
+      );
+
       return { projectId, data };
     } catch (error: any) {
       return rejectWithValue(error.message);
