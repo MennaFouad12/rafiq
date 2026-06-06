@@ -238,12 +238,13 @@ export async function updateProjectEpic(
     );
 
     const res = await response.json();
+    console.log("updateProjectEpic response:", res);
 
     if (!response.ok) {
       throw new Error(res.error || "update epic failed");
     }
+  return res?.[0];
 
-    return res;
   } catch (error) {
     console.log("update epic failed", error);
     throw error;

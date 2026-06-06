@@ -14,6 +14,7 @@ import SuccessToast from "@/components/shared/SuccessToast";
 import Button from "@/components/shared/Button";
 import Link from "next/link";
 import { resetPass } from "@/lib/auth";
+import { toast } from "sonner";
 
 
 
@@ -41,7 +42,9 @@ export default function ResetPassowrdForm() {
 if (!accessToken) return;
 
       await resetPass(fields.password, accessToken);
+      toast.success("Password reset successfully");
   
+
 
     
     setSuccessMsg(true);

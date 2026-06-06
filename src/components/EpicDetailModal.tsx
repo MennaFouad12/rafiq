@@ -67,6 +67,7 @@ export default function EpicDetailsModal({
 
   console.log(" epicId",epicId);
   const { epicTasks } = useAppSelector((state) => state.tasks);
+    console.log("FETCHING EPIC tasks FOR EPIC ID:", epicTasks);
   const { projectMembers } = useAppSelector((state) => state.projects);
 
   /* ───── Form ───── */
@@ -94,6 +95,7 @@ export default function EpicDetailsModal({
 
     dispatch(fetchSingleEpic({ projectId, id: epicId }));
     dispatch(fetchEpicTasks({ epicId }));
+    console.log("FETCHING EPIC tasks FOR EPIC ID:", epicTasks);
   }, [isOpen, projectId, epicId, dispatch]);
 
   useEffect(() => {

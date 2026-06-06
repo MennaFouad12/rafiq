@@ -18,6 +18,7 @@ import { Signin } from "@/lib/auth";
 import RightChevron from "@/components/icons/right-chevron";
 import LockIcon from "@/components/icons/LockIcon";
 import MailIcon from "@/components/icons/MailIcon";
+import { toast } from "sonner";
 
 // import Input from "@/components/ui/shared-input";
 // import SharedTitle from "@/components/shared/shared-title";
@@ -69,6 +70,8 @@ export default function LoginForm() {
               role: user.role,
             }),
           );
+    
+          toast.success("Login successful");
           
   const callbackUrl = searchParams.get("callbackUrl") || "/projects";
       router.replace(callbackUrl);
@@ -78,6 +81,7 @@ export default function LoginForm() {
     
         } catch (err: any) {
           setError(err.message);
+          toast.error(err.message || "Login failed");
         } finally {
           setLoading(false);
         }

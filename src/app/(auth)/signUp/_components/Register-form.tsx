@@ -16,6 +16,7 @@ import SubmissionError from "@/components/shared/submission-error";
 import FormFooter from "../../_components/form-footer";
 import { registerRules } from "@/lib/constant/auth.constants";
 
+import { toast } from "sonner";
 
 
 
@@ -45,6 +46,7 @@ export default function RegisterForm() {
       });
 
       console.log("Signup success:", res);
+      toast.success("Account created successfully");
       if ("error_code" in res) {
         setErrorMsg(res.msg);
         return;
@@ -55,6 +57,7 @@ export default function RegisterForm() {
 
     } catch (err: any) {
       setApiError(err.message || "Something went wrong");
+      toast.error(err.message || "Signup failed");
     } finally {
       setLoading(false);
     }

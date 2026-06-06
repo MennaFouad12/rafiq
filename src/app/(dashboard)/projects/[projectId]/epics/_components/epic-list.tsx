@@ -54,6 +54,8 @@ console.log("Project ID in EpicList:", id);
       search: debouncedSearch,
     });
 
+    
+
   const handleLoadMore = useCallback(() => {
     setMobilePage((prev) => prev + 1);
   }, []);
@@ -148,12 +150,12 @@ architectural clarity."
               ref={isLast ? lastElementRef : undefined}
               title={epic.title}
               createdAt={epic.created_at}
-              userName={epic.assignee.name}
-              createdBy={epic.created_by.name}
+              userName={epic.assignee?.name ?? ""}
+              createdBy={epic.created_by?.name ?? ""}
               deadline={epic.deadline}
-              asigneeName={epic.assignee.name}
+            asigneeName={epic.assignee?.name ?? ""}
               description={epic.description}
-              assigneeId={epic.assignee.sub}
+              assigneeId={epic.assignee?.sub ?? null}
               projectId={id}
               onUpdate={(patch) => updateEpic(epic.id, patch)}
             />

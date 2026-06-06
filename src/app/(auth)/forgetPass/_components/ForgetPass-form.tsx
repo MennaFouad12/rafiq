@@ -15,6 +15,7 @@ import Link from "next/link";
 import LeftChevron from "@/components/icons/left-chevron";
 import ResetPassIcon from "@/components/icons/ResetPass-icon";
 import { useResendTimer } from "../_hooks/use-resend-otp";
+import { toast } from "sonner";
 
 // import Input from "@/components/ui/shared-input";
 // import SharedTitle from "@/components/shared/shared-title";
@@ -54,6 +55,7 @@ export default function ForgotPassForm() {
     if (trialsExhausted) return;
 
     await forgetPass(data.email);
+    toast.success("Reset link sent successfully");
     setSuccessMsg(true);
     sessionStorage.setItem("reset-link-sent", "true");
     setErrorMsg("");

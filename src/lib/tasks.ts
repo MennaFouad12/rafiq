@@ -123,7 +123,7 @@ export async function getEpicTasks(epic_id:string) {
     );
 
     const data = await response.json();
-
+console.log("Epic Tasks Data:", data);
     if (!response.ok) {
       throw new Error(data.error || "get epic tasks failed");
     }

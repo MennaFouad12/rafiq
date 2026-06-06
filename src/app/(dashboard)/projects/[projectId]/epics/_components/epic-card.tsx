@@ -20,27 +20,11 @@ import { toast } from "sonner";
 import { Member } from "@/lib/types/member.types";
 import EpicAssigneeField from "./epic-assignee-field";
 import EmptyTask from "./empty-task";
-// import TaskList from "../../tasks/_components/tasks-list";
+
 import { ROUTES } from "@/lib/constant/routes.constants";
 import { fetchEpicTasks } from "@/redux/features/tasks/task";
 import TaskList from "../../tasks/_components/Task-List";
-// import EmptyTask from "./empty-task";
-// import CreatedByIcon from "@/components/icons/created-by-icon";
-// import { updateEpicAction } from "@/lib/actions/epics.actions";
-// import { toast } from "sonner";
-// import TextArea from "@/components/ui/shared-textarea";
-// import SubmissionError from "@/components/shared/submission-error";
-// import useGetProjectMembers from "../../members/hooks/use-get-project-members";
-// import { Member } from "@/lib/types/member.types";
-// import { EpicList } from "@/lib/types/epic.types";
-// import Avatar from "@/components/shared/avatar";
-// import EpicAssigneeField from "./epic-assignee-field";
-// import useGetTasks from "../../tasks/hooks/use-get-tasks";
-// import TaskList from "../../tasks/_components/tasks-list";
-// import TaskCardSkeleton from "@/components/skeletons/task-card.skeleton";
-// import Link from "next/link";
-// import { useIsMobile } from "@/lib/hooks/use-mobile";
-// import { ROUTES } from "@/lib/constants/routes.constants";
+
 
 type EpicCardProps = {
   title: string;
@@ -97,7 +81,14 @@ export default function EpicCard({
   //   enabled: isOpen,
   // });
 
-  const { epicTasks, loadingEpicTasks } = useAppSelector((state) => state.tasks);
+  // const { epicTasks, loadingEpicTasks } = useAppSelector((state) => state.tasks);
+const loadingEpicTasks = useAppSelector(
+  (state) => state.tasks.loadingEpicTasks
+);
+
+const epicTasks = useAppSelector(
+  (state) => state.tasks.epicTasks[epicId] || []
+);
 
 
   const getMemberAvatar = (member: Member) =>
@@ -106,20 +97,23 @@ export default function EpicCard({
     member.metadata?.avatar ??
     null;
 
-  const updateField = async (
-    payload: Partial<EpicList[0]>,
-    successMessage: string,
-    errorMessage = "Failed to update epic. Please try again."
-  ) => {
+const updateField = async (
+  payload: Partial<EpicList[0]>,
+  successMessage: string,
+  errorMessage = "Failed to update epic. Please try again."
+) => {
+  try {
     const res = await updateProjectEpic(epicId, payload);
-    if (res.success) {
-      toast.success(successMessage);
-      onUpdate?.(payload); // patch parent list — no refetch
-    } else {
-      toast.error(errorMessage);
-    }
-    return res.success;
-  };
+
+    toast.success(successMessage);
+
+onUpdate?.(res); // res = full object
+    return true;
+  } catch (err) {
+    toast.error(errorMessage);
+    return false;
+  }
+};
 
   const isMobile = useIsMobile();
   const handleTitleSave = async () => {
@@ -201,17 +195,30 @@ export default function EpicCard({
   };
 
   const displayAssigneeId = optimisticAssignee?.id ?? assigneeId ?? null;
-  const displayAssigneeName = optimisticAssignee?.name ?? asigneeName ?? "";
+  // const displayAssigneeName = optimisticAssignee?.name ?? asigneeName ?? "";
+  const displayAssigneeName =
+  optimisticAssignee?.name ??
+  projectMembers.find(m => m.user_id === assigneeId)?.metadata?.name ??
+  "";
   const currentMember = projectMembers.find((m) => m.user_id === displayAssigneeId);
   const currentAvatarSrc = currentMember
     ? getMemberAvatar(currentMember)
     : null;
   useEffect(() => {
-      if (projectId || epicId) {
+      if (projectId ) {
         dispatch(fetchProjectMembers(projectId));
-        dispatch(fetchEpicTasks({ epicId }));
+        // dispatch(fetchEpicTasks({ epicId }));
       }
-    }, [projectId , epicId, dispatch])
+    }, [projectId , dispatch])
+
+
+  useEffect(() => {
+  if (isOpen) {
+    dispatch(fetchEpicTasks({ epicId }));
+    console.log("FETCHING EPIC tasks FOR EPIC ID:", epicTasks);
+
+  }
+}, [isOpen, epicId, dispatch]);
 
   return (
     <div
@@ -343,7 +350,7 @@ export default function EpicCard({
               ) : epicTasks?.length === 0 ? (
                 <EmptyTask epicId={epicId} projectId={projectId} />
               ) : (
-                <TaskList tasks={epicTasks} />
+                <TaskList tasks={epicTasks} fromepic={true} />
               )}
             </Modal>
           </div>

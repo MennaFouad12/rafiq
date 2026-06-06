@@ -67,17 +67,29 @@ export default function useGetEpics({
 
       const incoming: EpicList = data ?? [];
 
-      setEpics((prev) =>
-        !append || offset === 0
-          ? incoming
-          : [...prev, ...incoming]
-      );
+      // setEpics((prev) =>
+      //   !append || offset === 0
+      //     ? incoming
+      //     : [...prev, ...incoming]
+      // );
 
-      setTotal(totalCount);
+      // setTotal(totalCount);
 
-      setHasMore(
-        (offset ?? 0) + incoming.length < totalCount
-      );
+      // setHasMore(
+      //   (offset ?? 0) + incoming.length < totalCount
+      // );
+
+setEpics(prev => {
+  if (!append || offset === 0) return incoming;
+
+  const map = new Map(prev.map(e => [e.id, e]));
+
+  incoming.forEach(epic => {
+    map.set(epic.id, epic);
+  });
+
+  return Array.from(map.values());
+});
     } catch (err) {
       if (
         err instanceof DOMException &&
@@ -102,18 +114,26 @@ export default function useGetEpics({
     getAllEpics();
   }, [getAllEpics]);
 
-  const updateEpic = useCallback(
-    (epicId: string, patch: Partial<EpicList[0]>) => {
-      setEpics((prev) =>
-        prev.map((epic) =>
-          epic.id === epicId
-            ? { ...epic, ...patch }
-            : epic
-        )
-      );
-    },
-    []
+  // const updateEpic = useCallback(
+  //   (epicId: string, patch: Partial<EpicList[0]>) => {
+  //     setEpics((prev) =>
+  //       prev.map((epic) =>
+  //         epic.id === epicId
+  //           ? { ...epic, ...patch }
+  //           : epic
+  //       )
+  //     );
+  //   },
+  //   []
+  // );
+
+  const updateEpic = useCallback((epicId: string, updatedEpic: EpicList[0]) => {
+  setEpics(prev =>
+    prev.map(epic =>
+      epic.id === epicId ? updatedEpic : epic
+    )
   );
+}, []);
 
   const addEpic = useCallback((epic: EpicList[0]) => {
     setEpics((prev) => [epic, ...prev]);

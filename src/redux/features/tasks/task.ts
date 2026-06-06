@@ -62,8 +62,7 @@ export const fetchEpicTasks = createAsyncThunk(
 interface taskState {
   tasks: any[];
   tasksByStatus: Record<string, any[]>;
-  epicTasks: any[];
-
+epicTasks: Record<string, any[]>;
   loadingTasks: boolean;
   loadingEpicTasks: boolean;
 
@@ -77,7 +76,7 @@ interface taskState {
 const initialState: taskState = {
   tasks: [],
   tasksByStatus: {},
-  epicTasks: [],
+  epicTasks: {},
 
   loadingTasks: false,
   loadingEpicTasks: false,
@@ -207,14 +206,24 @@ reducers: {
         state.error = null;
       })
 
-      .addCase(fetchEpicTasks.fulfilled, (state, action) => {
-        state.loadingEpicTasks = false;
+      // .addCase(fetchEpicTasks.fulfilled, (state, action) => {
+      //   state.loadingEpicTasks = false;
 
-        // safety: ensure array
-        state.epicTasks = Array.isArray(action.payload)
-          ? action.payload
-          : action.payload?.data || [];
-      })
+      //   // safety: ensure array
+      //   state.epicTasks = Array.isArray(action.payload)
+      //     ? action.payload
+      //     : action.payload?.data || [];
+      // })
+
+      .addCase(fetchEpicTasks.fulfilled, (state, action) => {
+  state.loadingEpicTasks = false;
+
+  const epicId = action.meta.arg.epicId;
+
+  state.epicTasks[epicId] = Array.isArray(action.payload)
+    ? action.payload
+    : action.payload?.data || [];
+})
 
       .addCase(fetchEpicTasks.rejected, (state, action) => {
         state.loadingEpicTasks = false;
