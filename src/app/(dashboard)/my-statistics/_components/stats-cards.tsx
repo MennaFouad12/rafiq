@@ -6,7 +6,7 @@ import TaskCheckIcon from "@/components/icons/task-check-icon";
 
 type Stat = {
   label: string;
-  value: string;
+  value: number;
   icon: React.ReactNode;
   iconBg: string;
   valueColor: string;
