@@ -1,14 +1,40 @@
 // import { TasksCountFilter, TasksStas } from "@/lib/types/stats.types";
 // import useGetTasksCount from "../hooks/use-get-tasks-count";
 // import EmptyTasksState from "./empty-tasks-count-state";
-
+"use client";
 import { TasksCountFilter, TasksStas } from "@/lib/types/stats.types";
 import EmptyTasksState from "./empty-tasks-count-state";
+import { getTasksCountPerProject } from "@/lib/statistics";
+import { useEffect, useState } from "react";
 
 export default function TasksCountCard(filters: TasksCountFilter) {
-  const { tasksCount } = useGetTasksCount(filters);
+  // const { tasksCount } = useGetTasksCount(filters);
+
   
-  const isEmpty = !tasksCount || tasksCount.length === 0;
+
+
+
+  const [data, setData] = useState<TasksStas[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadData() {
+      try {
+        const result = await getTasksCountPerProject(filters);
+        setData(result ?? []);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadData();
+  }, [filters]);
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
+  const isEmpty = data.length === 0;
 
   if (isEmpty) {
     return <EmptyTasksState />;
@@ -16,7 +42,7 @@ export default function TasksCountCard(filters: TasksCountFilter) {
   return (
     <div className="bg-white md:w-1/3 w-full min-h-66 p-8 rounded-lg">
       <p className="text-slate-dark font-bold text-lg mb-10">All Projects</p>
-      {tasksCount?.map((task: TasksStas) => (
+      {data?.map((task: TasksStas) => (
         <div
           key={task.project_id}
           className="flex items-center justify-between"

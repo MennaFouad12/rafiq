@@ -2,7 +2,7 @@
 // import { CalendarStatsResponse, ProjectTasksCount, StatisticsFilters, TaskStatus } from '@/types/statistics';
 import { fetchWithAuth } from './auth';
 import { CalendarStatsResponse, Project, ProjectTasksCount, StatisticsFilters } from './types/statistics';
-import { StatsFilters } from './types/stats.types';
+import { StatsFilters, TasksCountFilter } from './types/stats.types';
 
 const baseUrl="https://lwsctewpcxlvwjixzdky.supabase.co"
 const apiKey="sb_publishable_WueluaPFskLbogGJGAe6-Q_U_Jvc2Qj"
@@ -56,17 +56,14 @@ export async function getTasksCalendarStats(
   return data;
 }
 
-export async function getTasksCountPerProject(startDate: Date, endDate: Date): Promise<ProjectTasksCount[]> {
+export async function getTasksCountPerProject(filters: TasksCountFilter) {
   const response = await fetchWithAuth(`${baseUrl}/rest/v1/rpc/get_tasks_count_per_project`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
       'apikey': apiKey,
     },
-    body: JSON.stringify({
-      p_start_date: startDate.toISOString().split('T')[0],
-      p_end_date: endDate.toISOString().split('T')[0],
-    }),
+    body: JSON.stringify(filters),
   });
 
   const data = await response.json();
