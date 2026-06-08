@@ -39,7 +39,7 @@ type EpicCardProps = {
   description?: string;
   assigneeId?: string | null;
   projectId: string;
-  onUpdate?: (patch: Partial<EpicList[0]>) => void;
+  onUpdate?: (updatedEpic: EpicList[0]) => void;
 };
 
 export default function EpicCard({
